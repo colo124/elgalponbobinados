@@ -11,13 +11,16 @@ const App: React.FC = () => {
     <HashRouter>
       <div className="flex min-h-screen bg-slate-50">
         <Sidebar />
-        <main className="flex-1">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/clientes" element={<Clientes />} />
-            <Route path="/clientes/historial" element={<HistorialCliente />} />
-            <Route path="/reparaciones" element={<Reparaciones />} />
-          </Routes>
+        {/* El padding-left de 64 (256px) solo aplica en desktop para dejar espacio al sidebar */}
+        <main className="flex-1 w-full md:pl-64 min-h-screen">
+          <div className="max-w-7xl mx-auto w-full">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/clientes" element={<Clientes />} />
+              <Route path="/clientes/historial" element={<HistorialCliente />} />
+              <Route path="/reparaciones" element={<Reparaciones />} />
+            </Routes>
+          </div>
         </main>
       </div>
     </HashRouter>
