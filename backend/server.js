@@ -16,17 +16,24 @@ app.use(express.json({limit: process?.env?.API_PAYLOAD_MAX_SIZE || "7mb"}));
 
 const PORT = process?.env?.API_BACKEND_PORT || 5000;
 const API_BACKEND_HOST = process?.env?.API_BACKEND_HOST || "127.0.0.1";
+
 const GOOGLE_CLOUD_LOCATION = process?.env?.GOOGLE_CLOUD_LOCATION;
 const GOOGLE_CLOUD_PROJECT = process?.env?.GOOGLE_CLOUD_PROJECT;
-
 if (!GOOGLE_CLOUD_PROJECT || !GOOGLE_CLOUD_LOCATION) {
   console.error("Error: Environment variables GOOGLE_CLOUD_PROJECT and GOOGLE_CLOUD_LOCATION must be set.");
+  process.exit(1);
+}
+const PROXY_HEADER = process?.env?.PROXY_HEADER;
+if (!PROXY_HEADER) {
+  console.error("Error: Environment variables PROXY_HEADER must be set.");
   process.exit(1);
 }
 
 app.set('trust proxy', 1 /* number of proxies between user and server */);
 
-// Rate limiter for the proxy
+// IMPORTANT: Vertex AI Studio Rate Limiting
+// This rate limiting configuration protects your backend APIs from abuse.
+// Removing it exposes your service to DoS attacks and unexpected costs.
 const proxyLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // Set ratelimit window at 15min (in ms)
     max: 100, // Limit each IP to 100 requests per window 
@@ -37,7 +44,6 @@ const proxyLimiter = rateLimit({
       message: 'You have exceed the request limit, please try again later.'
     },
 });
-
 // Apply the rate limiter to the /api-proxy route before the main proxy logic
 app.use('/api-proxy', proxyLimiter);
 
@@ -185,8 +191,8 @@ function getRequestHeaders(accessToken) {
 app.post('/api-proxy', async (req, res) => {
 
   // Check for the custom header added by the shim
-  if (req.headers['x-app-proxy'] !== 'local-vertex-ai-app') {
-    return res.status(403).send('Forbidden: Request must originate from the local Vertex App shim.');
+  if (req.headers['x-app-proxy'] !== PROXY_HEADER) {
+    return res.status(403).send('Forbidden: Request must originate from the Vertex App shim.');
   }
 
   const { originalUrl, method, headers, body } = req.body;

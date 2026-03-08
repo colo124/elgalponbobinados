@@ -87,8 +87,8 @@
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            // Add a custom header to easily identify these proxied requests on the Node.js backend.
-            'X-App-Proxy': 'local-vertex-ai-app',
+            // Add a random header to identify these proxied requests on the Node.js backend.
+            'X-App-Proxy': 'RlTeQHkGnz3RTHCrhYsBwGzCoTL-1keF',
           },
           body: JSON.stringify(requestDetails),
         };
