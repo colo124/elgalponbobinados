@@ -20,7 +20,11 @@ export const ReparacionPublica: React.FC = () => {
   if (loading) return <div className="p-10 text-center"><Loader2 className="animate-spin mx-auto" /></div>;
   if (!reparacion) return <div className="p-10 text-center">Reparación no encontrada.</div>;
 
-  const comentarios = typeof reparacion.comentarios === 'string' ? JSON.parse(reparacion.comentarios || '[]') : [];
+  // Parseo seguro del JSON de comentarios
+  let comentarios = [];
+  try {
+    comentarios = typeof reparacion.comentarios === 'string' ? JSON.parse(reparacion.comentarios) : (reparacion.comentarios || []);
+  } catch (e) { comentarios = []; }
 
   return (
     <div className="p-8 max-w-2xl mx-auto bg-slate-50 min-h-screen">

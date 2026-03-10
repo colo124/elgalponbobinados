@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
-import { Loader2, Trash2, Edit2, Search, X, Save } from 'lucide-react';
+import { Loader2, Trash2, Edit2, Search, X } from 'lucide-react';
 
 export const Motores: React.FC = () => {
   const [motores, setMotores] = useState<any[]>([]);
@@ -25,7 +25,6 @@ export const Motores: React.FC = () => {
 
   const filtered = motores.filter(m => 
     m.marca?.toLowerCase().includes(filtro.toLowerCase()) || 
-    m.modelo?.toLowerCase().includes(filtro.toLowerCase()) ||
     m.numero_serie?.includes(filtro)
   );
 
@@ -33,24 +32,34 @@ export const Motores: React.FC = () => {
     <div className="mt-6">
       <div className="relative mb-4">
         <Search className="absolute left-3 top-2.5 text-slate-400" size={18} />
-        <input placeholder="Buscar por marca, modelo o serie..." className="w-full pl-10 p-2 border rounded" onChange={e => setFiltro(e.target.value)} />
+        <input placeholder="Buscar por marca o serie..." className="w-full pl-10 p-2 border rounded" onChange={e => setFiltro(e.target.value)} />
       </div>
       
       {loading ? <Loader2 className="animate-spin mx-auto" /> : (
-        <div className="bg-white shadow rounded-lg overflow-hidden">
-          <table className="w-full text-sm text-left">
+        <div className="bg-white shadow rounded-lg overflow-x-auto">
+          <table className="w-full text-xs text-left">
             <thead className="bg-slate-100 border-b">
-              <tr><th className="p-3">Marca</th><th className="p-3">Modelo</th><th className="p-3">Nº Serie</th><th className="p-3">Acciones</th></tr>
+              <tr>
+                <th className="p-2">Marca</th><th className="p-2">HP</th><th className="p-2">Polos</th>
+                <th className="p-2">RPM</th><th className="p-2">Vueltas</th><th className="p-2">Conexión</th>
+                <th className="p-2">Ranuras</th><th className="p-2">Alambre</th><th className="p-2">Voltaje</th><th className="p-2">Acciones</th>
+              </tr>
             </thead>
             <tbody className="divide-y">
               {filtered.map(m => (
                 <tr key={m.id} className="hover:bg-slate-50">
-                  <td className="p-3">{m.marca}</td>
-                  <td className="p-3">{m.modelo}</td>
-                  <td className="p-3">{m.numero_serie}</td>
-                  <td className="p-3 flex gap-2">
-                    <button onClick={() => setEditingMotor(m)} className="text-blue-600"><Edit2 size={18}/></button>
-                    <button onClick={() => handleDelete(m.id)} className="text-red-600"><Trash2 size={18}/></button>
+                  <td className="p-2">{m.marca}</td>
+                  <td className="p-2">{m.potencia_hp}</td>
+                  <td className="p-2">{m.polos}</td>
+                  <td className="p-2">{m.rpm}</td>
+                  <td className="p-2">{m.vueltas}</td>
+                  <td className="p-2">{m.conexion}</td>
+                  <td className="p-2">{m.ranuras}</td>
+                  <td className="p-2">{m.alambre_seccion}</td>
+                  <td className="p-2">{m.voltaje}</td>
+                  <td className="p-2 flex gap-2">
+                    <button onClick={() => setEditingMotor(m)} className="text-blue-600"><Edit2 size={16}/></button>
+                    <button onClick={() => handleDelete(m.id)} className="text-red-600"><Trash2 size={16}/></button>
                   </td>
                 </tr>
               ))}
@@ -60,45 +69,29 @@ export const Motores: React.FC = () => {
       )}
 
       {editingMotor && (
-        <MotorEditModal 
-          motor={editingMotor} 
-          onClose={() => setEditingMotor(null)} 
-          onSuccess={() => { setEditingMotor(null); fetchMotores(); }} 
-        />
-      )}
-    </div>
-  );
-};
-
-const MotorEditModal: React.FC<{ motor: any; onClose: () => void; onSuccess: () => void }> = ({ motor, onClose, onSuccess }) => {
-  const [form, setForm] = useState(motor);
-  const [loading, setLoading] = useState(false);
-
-  const handleSave = async () => {
-    setLoading(true);
-    await supabase.from('motores').update(form).eq('id', motor.id);
-    setLoading(false);
-    onSuccess();
-  };
-
-  return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white p-6 rounded shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between mb-4"><h2 className="font-bold">Editar Motor</h2><button onClick={onClose}><X/></button></div>
-        <div className="grid grid-cols-3 gap-4">
-          <input className="border p-2 rounded" value={form.marca || ''} onChange={e => setForm({...form, marca: e.target.value})} placeholder="Marca" />
-          <input className="border p-2 rounded" value={form.modelo || ''} onChange={e => setForm({...form, modelo: e.target.value})} placeholder="Modelo" />
-          <input className="border p-2 rounded" value={form.potencia_hp || ''} onChange={e => setForm({...form, potencia_hp: e.target.value})} placeholder="HP" />
-          <input className="border p-2 rounded" value={form.polos || ''} onChange={e => setForm({...form, polos: e.target.value})} placeholder="Polos" />
-          <input className="border p-2 rounded" value={form.rpm || ''} onChange={e => setForm({...form, rpm: e.target.value})} placeholder="RPM" />
-          <input className="border p-2 rounded" value={form.voltaje || ''} onChange={e => setForm({...form, voltaje: e.target.value})} placeholder="Voltaje" />
-          <input className="border p-2 rounded" value={form.numero_serie || ''} onChange={e => setForm({...form, numero_serie: e.target.value})} placeholder="Nº Serie" />
-          <input className="border p-2 rounded" value={form.ranuras || ''} onChange={e => setForm({...form, ranuras: e.target.value})} placeholder="Ranuras" />
-          <input className="border p-2 rounded" value={form.tipo_motor || ''} onChange={e => setForm({...form, tipo_motor: e.target.value})} placeholder="Tipo" />
-          <textarea className="border p-2 rounded col-span-3" value={form.comentarios || ''} onChange={e => setForm({...form, comentarios: e.target.value})} placeholder="Comentarios" />
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white p-6 rounded shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between mb-4"><h2 className="font-bold">Editar Motor</h2><button onClick={() => setEditingMotor(null)}><X/></button></div>
+            <div className="grid grid-cols-3 gap-4">
+              <input className="border p-2 rounded" value={editingMotor.marca || ''} onChange={e => setEditingMotor({...editingMotor, marca: e.target.value})} placeholder="Marca" />
+              <input className="border p-2 rounded" value={editingMotor.potencia_hp || ''} onChange={e => setEditingMotor({...editingMotor, potencia_hp: e.target.value})} placeholder="HP" />
+              <input className="border p-2 rounded" value={editingMotor.polos || ''} onChange={e => setEditingMotor({...editingMotor, polos: e.target.value})} placeholder="Polos" />
+              <input className="border p-2 rounded" value={editingMotor.rpm || ''} onChange={e => setEditingMotor({...editingMotor, rpm: e.target.value})} placeholder="RPM" />
+              <input className="border p-2 rounded" value={editingMotor.vueltas || ''} onChange={e => setEditingMotor({...editingMotor, vueltas: e.target.value})} placeholder="Vueltas" />
+              <input className="border p-2 rounded" value={editingMotor.conexion || ''} onChange={e => setEditingMotor({...editingMotor, conexion: e.target.value})} placeholder="Conexión" />
+              <input className="border p-2 rounded" value={editingMotor.ranuras || ''} onChange={e => setEditingMotor({...editingMotor, ranuras: e.target.value})} placeholder="Ranuras" />
+              <input className="border p-2 rounded" value={editingMotor.alambre_seccion || ''} onChange={e => setEditingMotor({...editingMotor, alambre_seccion: e.target.value})} placeholder="Alambre" />
+              <input className="border p-2 rounded" value={editingMotor.voltaje || ''} onChange={e => setEditingMotor({...editingMotor, voltaje: e.target.value})} placeholder="Voltaje" />
+              <textarea className="border p-2 rounded col-span-3" value={editingMotor.comentarios || ''} onChange={e => setEditingMotor({...editingMotor, comentarios: e.target.value})} placeholder="Comentarios" />
+            </div>
+            <button onClick={async () => { 
+              await supabase.from('motores').update(editingMotor).eq('id', editingMotor.id); 
+              setEditingMotor(null); 
+              fetchMotores(); 
+            }} className="w-full mt-4 bg-blue-600 text-white py-2 rounded">Guardar Cambios</button>
+          </div>
         </div>
-        <button onClick={handleSave} className="w-full mt-4 bg-blue-600 text-white py-2 rounded">{loading ? 'Guardando...' : 'Guardar'}</button>
-      </div>
+      )}
     </div>
   );
 };

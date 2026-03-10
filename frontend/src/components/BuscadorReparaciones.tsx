@@ -19,7 +19,7 @@ export const BuscadorReparaciones: React.FC = () => {
   useEffect(() => { fetchReparaciones(); }, []);
 
   const handleDelete = async (id: string) => {
-    if (!confirm('¿Eliminar reparación?')) return;
+    if (!confirm('¿Eliminar esta reparación?')) return;
     await supabase.from('reparaciones').delete().eq('id', id);
     fetchReparaciones();
   };
@@ -34,13 +34,22 @@ export const BuscadorReparaciones: React.FC = () => {
       </div>
       {loading ? <Loader2 className="animate-spin mx-auto" /> : (
         <table className="w-full text-sm">
-          <thead className="bg-slate-50"><tr><th className="p-3">Cliente</th><th className="p-3">Motor</th><th className="p-3">Estado</th><th className="p-3">Acciones</th></tr></thead>
+          <thead className="bg-slate-50">
+            <tr>
+              <th className="p-3">Cliente</th>
+              <th className="p-3">Motor</th>
+              <th className="p-3">Estado</th>
+              <th className="p-3">Fecha</th>
+              <th className="p-3">Acciones</th>
+            </tr>
+          </thead>
           <tbody className="divide-y">
             {filtered.map(r => (
               <tr key={r.id}>
                 <td className="p-3">{r.clientes?.nombre_razon}</td>
                 <td className="p-3">{r.descripcion_motor}</td>
                 <td className="p-3">{r.estado}</td>
+                <td className="p-3">{r.created_at ? new Date(r.created_at).toLocaleDateString() : '-'}</td>
                 <td className="p-3 flex gap-2">
                   <button onClick={() => setEditingReparacion(r)} className="text-blue-600"><Edit2 size={18}/></button>
                   <button onClick={() => handleDelete(r.id)} className="text-red-600"><Trash2 size={18}/></button>

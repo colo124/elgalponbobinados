@@ -10,9 +10,8 @@ interface MotorFormProps {
 export const MotorForm: React.FC<MotorFormProps> = ({ onSuccess, onClose }) => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    marca: '', modelo: '', potencia_hp: '', polos: '', vueltas: '', alambre_seccion: '',
-    paso: '', conexion: '', empresa_anterior: '', rpm: '', ranuras: '', voltaje: '',
-    tipo_motor: '', numero_serie: '', codigo_interno: '', comentarios: ''
+    marca: '', modelo: '', potencia_hp: '', polos: '', rpm: '', voltaje: '', 
+    conexion: '', ranuras: '', alambre_seccion: '', vueltas: '', numero_serie: '', comentarios: ''
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -23,9 +22,9 @@ export const MotorForm: React.FC<MotorFormProps> = ({ onSuccess, onClose }) => {
       ...formData,
       potencia_hp: toNum(formData.potencia_hp),
       polos: toNum(formData.polos),
-      vueltas: toNum(formData.vueltas),
       rpm: toNum(formData.rpm),
       ranuras: toNum(formData.ranuras),
+      vueltas: toNum(formData.vueltas),
       token_publico: crypto.randomUUID()
     };
     const { error } = await supabase.from('motores').insert([payload]);
@@ -40,14 +39,14 @@ export const MotorForm: React.FC<MotorFormProps> = ({ onSuccess, onClose }) => {
       <div className="flex justify-between mb-4"><h2 className="font-bold">Nuevo Motor</h2><button type="button" onClick={onClose}><X/></button></div>
       <div className="grid grid-cols-3 gap-4">
         <input placeholder="Marca" className={inputClass} onChange={e => setFormData({...formData, marca: e.target.value})} />
-        <input placeholder="Modelo" className={inputClass} onChange={e => setFormData({...formData, modelo: e.target.value})} />
         <input placeholder="HP" type="number" className={inputClass} onChange={e => setFormData({...formData, potencia_hp: e.target.value})} />
         <input placeholder="Polos" type="number" className={inputClass} onChange={e => setFormData({...formData, polos: e.target.value})} />
         <input placeholder="RPM" type="number" className={inputClass} onChange={e => setFormData({...formData, rpm: e.target.value})} />
-        <input placeholder="Voltaje" className={inputClass} onChange={e => setFormData({...formData, voltaje: e.target.value})} />
-        <input placeholder="Nº Serie" className={inputClass} onChange={e => setFormData({...formData, numero_serie: e.target.value})} />
+        <input placeholder="Conexión" className={inputClass} onChange={e => setFormData({...formData, conexion: e.target.value})} />
         <input placeholder="Ranuras" type="number" className={inputClass} onChange={e => setFormData({...formData, ranuras: e.target.value})} />
-        <input placeholder="Tipo Motor" className={inputClass} onChange={e => setFormData({...formData, tipo_motor: e.target.value})} />
+        <input placeholder="Alambre" className={inputClass} onChange={e => setFormData({...formData, alambre_seccion: e.target.value})} />
+        <input placeholder="Vueltas" type="number" className={inputClass} onChange={e => setFormData({...formData, vueltas: e.target.value})} />
+        <input placeholder="Voltaje" className={inputClass} onChange={e => setFormData({...formData, voltaje: e.target.value})} />
       </div>
       <textarea placeholder="Comentarios" className={`${inputClass} mt-4`} onChange={e => setFormData({...formData, comentarios: e.target.value})} />
       <button disabled={loading} className="mt-4 bg-blue-600 text-white px-6 py-2 rounded"><Save size={18} /> Guardar</button>
