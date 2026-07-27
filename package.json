@@ -1,12 +1,31 @@
 {
-  "name": "taller-de-bobinado-pro",
-  "workspaces": ["frontend", "backend"], 
+  "name": "galpon-bobinados",
+  "version": "1.0.0",
+  "private": true,
   "scripts": {
-    "dev-frontend": "npm run dev --prefix frontend",
-    "dev-backend": "npm run dev --prefix backend",
-    "dev": "concurrently \"npm run dev-frontend\" \"npm run dev-backend\""
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@vercel/analytics": "1.6.1",
+    "lucide-react": "^1.16.0",
+    "next": "16.2.6",
+    "react": "^19",
+    "react-dom": "^19"
   },
   "devDependencies": {
-    "concurrently": "latest"
+    "@tailwindcss/postcss": "^4.2.0",
+    "@types/node": "^24",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "postcss": "^8.5",
+    "tailwindcss": "^4.2.0",
+    "typescript": "5.7.3"
+  },
+  "packageManager": "npm@10.9.2",
+  "engines": {
+    "node": ">=20.9.0"
   }
 }
